@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>core-localstorage-basic</title>
+  <title>core-localstorage-value-binding</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
@@ -21,33 +21,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <core-localstorage id="localstorage" name="core-localstorage-test"></core-localstorage>
+  <polymer-element name="x-foo" attributes="value" noscript>
+    <template>
+      <div>{{value.foo}}</div>
+    </template>
+  </polymer-element>
+
+  <polymer-element name="x-test" attributes="value" noscript>
+    <template>
+      <x-foo value="{{value}}"></x-foo>
+      <core-localstorage id="localstorage" name="core-localstorage-test" value="{{value}}"></core-localstorage>
+    </template>
+  </polymer-element>
+  
+  <x-test></x-test>
 
   <script>
 
     window.localStorage.setItem('core-localstorage-test', '{"foo":"bar"}');
-    var storage = document.querySelector('#localstorage');
+    var xtest = document.querySelector('x-test');
     
     suite('basic', function() {
 
-      test('load', function() {
-        assert.isNotNull(storage.value);
-        assert.equal(storage.value.foo, 'bar');
+      test('initial value', function() {
+        assert.isNotNull(xtest.value);
+        assert.equal(xtest.value.foo, 'bar');
       });
       
-      test('save', function(done) {
+      test('set value', function(done) {
         var newValue = {'foo': 'zot'};
-        storage.value = newValue;
+        xtest.value = newValue;
         asyncPlatformFlush(function() {
-          var v = window.localStorage.getItem(storage.name);
+          var v = window.localStorage.getItem(xtest.$.localstorage.name);
           v = JSON.parse(v);
           assert.equal(v.foo, newValue.foo);
           done();
         });
       });
+      
+      test('save', function(done) {
+        xtest.value.foo = 'quux';
+        xtest.$.localstorage.save();
+        asyncPlatformFlush(function() {
+          var v = window.localStorage.getItem(xtest.$.localstorage.name);
+          v = JSON.parse(v);
+          assert.equal(v.foo, 'quux');
+          done();
+        });
+      });
 
     });
-
+    
   </script>
 
 </body>

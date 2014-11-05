@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>core-localstorage-basic</title>
+  <title>core-localstorage-raw</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
@@ -21,27 +21,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <core-localstorage id="localstorage" name="core-localstorage-test"></core-localstorage>
+  <core-localstorage id="localstorage" useRaw name="core-localstorage-test"></core-localstorage>
 
   <script>
 
-    window.localStorage.setItem('core-localstorage-test', '{"foo":"bar"}');
+    window.localStorage.setItem('core-localstorage-test', 'hello world');
     var storage = document.querySelector('#localstorage');
     
     suite('basic', function() {
 
       test('load', function() {
-        assert.isNotNull(storage.value);
-        assert.equal(storage.value.foo, 'bar');
+        assert.equal(storage.value, 'hello world');
       });
       
       test('save', function(done) {
-        var newValue = {'foo': 'zot'};
-        storage.value = newValue;
+        var m = 'goodbye';
+        storage.value = m;
         asyncPlatformFlush(function() {
           var v = window.localStorage.getItem(storage.name);
-          v = JSON.parse(v);
-          assert.equal(v.foo, newValue.foo);
+          assert.equal(v, m);
           done();
         });
       });
