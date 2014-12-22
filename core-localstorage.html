@@ -94,8 +94,6 @@ triggered only when value is a different instance.
     },
 
     onAfterLoad: function(v) {
-      console.log("v is ");
-      console.log(v);
       if (this.useRaw) {
         this.value = v;
       } else {
@@ -132,8 +130,6 @@ triggered only when value is a different instance.
       var chromeStorage;
       chromeStorage = chrome.storage[this.useChrome];
       chromeStorage.get([this.name], function(items) {
-        console.log("Getting " + this.name + ":");
-        console.log(items);
         var v = null;
         if(items[this.name]) {
           v = items[this.name];
@@ -143,12 +139,24 @@ triggered only when value is a different instance.
     },
     
     load: function() {
-      console.log("The name is " + this.name);
       if(this.useChrome === null) {
         this.localStorageLoad();
       } else {
         this.chromeStorageLoad();
       }
+    },
+
+    localStorageSave: function(v) {
+      localStorage.setItem(this.name, v);
+    },
+
+    chromeStorageSave: function(v) {
+      var chromeStorage;
+      chromeStorage = chrome.storage[this.useChrome];
+      var nameValue = {};
+      nameValue[this.name] = v;
+      chromeStorage.set(nameValue, function() { 
+      }.bind(this));
     },
 
     /** 
@@ -158,7 +166,11 @@ triggered only when value is a different instance.
      */
     save: function() {
       var v = this.useRaw ? this.value : JSON.stringify(this.value);
-      localStorage.setItem(this.name, v);
+      if(this.useChrome == null) {
+        this.localStorageSave(v);
+      } else {
+        this.chromeStorageSave(v);
+      }
     }
     
   });
