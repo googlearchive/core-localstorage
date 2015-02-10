@@ -43,6 +43,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         });
       });
+        
+      test('remove', function(done) {
+        var m = 'remove me';
+        storage.value = m;
+        storage.remove();
+        asyncPlatformFlush(function () {
+            var v = window.localStorage.getItem(storage.name); 
+            assert.isNull(v);
+            done();
+        });
+      });
 
     });
 
