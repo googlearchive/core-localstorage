@@ -26,52 +26,95 @@ triggered only when value is a different instance.
 
 <link rel="import" href="../polymer/polymer.html">
 
-<polymer-element name="core-localstorage" attributes="name value useRaw autoSaveDisabled" hidden>
 <script>
 
-  Polymer('core-localstorage', {
-    
+  Polymer({
+    is: 'core-localstorage',
     /**
      * Fired when a value is loaded from localStorage.
      * @event core-localstorage-load
      */
-     
+
     /**
-     * The key to the data stored in localStorage.
-     *
-     * @attribute name
-     * @type string
-     * @default null
+     * Fired when localStorage was changed outside of current document (window storage event)
+     * @event core-localstorage-changed
      */
-    name: '',
-    
-    /**
-     * The data associated with the specified name.
-     *
-     * @attribute value
-     * @type object
-     * @default null
-     */
-    value: null,
-    
-    /**
-     * If true, the value is stored and retrieved without JSON processing.
-     *
-     * @attribute useRaw
-     * @type boolean
-     * @default false
-     */
-    useRaw: false,
-    
-    /**
-     * If true, auto save is disabled.
-     *
-     * @attribute autoSaveDisabled
-     * @type boolean
-     * @default false
-     */
-    autoSaveDisabled: false,
-    
+
+    published: {
+      /**
+       * The key to the data stored in localStorage.
+       *
+       * @attribute name
+       * @type string
+       * @default null
+       */
+      name: {
+        type: String,
+        reflect: true
+      },
+      /**
+       * The data associated with the specified name.
+       *
+       * @attribute value
+       * @type object
+       * @default null
+       */
+      value: {
+        type: Object,
+        notify: true
+      },
+      
+      /**
+       * If true, the value is stored and retrieved without JSON processing.
+       *
+       * @attribute useRaw
+       * @type boolean
+       * @default false
+       */
+      useRaw: Boolean,
+      
+      /**
+       * If true, auto save is disabled.
+       *
+       * @attribute autoSaveDisabled
+       * @type boolean
+       * @default false
+       */
+      autoSaveDisabled: {
+        type: Boolean,
+        reflect: true
+      }
+    },
+
+    configure: function() {
+      return {
+        // value: null, do not initialize value, no need to call 
+        name: '',
+        useRaw: false,
+        autoSaveDisabled: false
+      }
+    },
+    bind: {
+      name: 'nameChanged',
+      value: 'valueChanged'
+    },
+
+    attached: function() {
+      this._handleStorage = this.handleStorage.bind(this);
+      window.addEventListener('storage', this._handleStorage);
+    },
+
+    detached: function() {
+      window.removeEventListener('storage', this._handleStorage);
+    },
+
+    handleStorage: function(ev) {
+      if (e.key == this.name) {
+        this.load();
+        this.fire('core-localstorage-changed');
+      }
+    },
+
     valueChanged: function() {
       if (this.loaded && !this.autoSaveDisabled) {
         this.save();
@@ -103,12 +146,13 @@ triggered only when value is a different instance.
           try {
             v = JSON.parse(v);
           } catch(x) {
+            console.error("could not parse local storage value", v);
           }
           this.value = v;
         }
       }
       this.loaded = true;
-      this.asyncFire('core-localstorage-load');
+      this.fire('core-localstorage-load');
     },
     
     /** 

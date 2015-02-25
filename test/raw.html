@@ -25,10 +25,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
 
-    window.localStorage.setItem('core-localstorage-test', 'hello world');
-    var storage = document.querySelector('#localstorage');
+    var storage;
     
     suite('basic', function() {
+
+      before( function() {
+        window.localStorage.setItem('core-localstorage-test', 'hello world');
+        storage = document.querySelector('#localstorage');
+        storage.load();
+      });
+
+      after(function() {
+        window.localStorage.removeItem('core-localstorage-test');
+      });
 
       test('load', function() {
         assert.equal(storage.value, 'hello world');
@@ -37,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('save', function(done) {
         var m = 'goodbye';
         storage.value = m;
-        asyncPlatformFlush(function() {
+        flush(function() {
           var v = window.localStorage.getItem(storage.name);
           assert.equal(v, m);
           done();
