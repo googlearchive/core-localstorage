@@ -21,27 +21,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <polymer-element name="x-foo" attributes="value" noscript>
+  <dom-module id="x-foo">
     <template>
       <div>{{value.foo}}</div>
     </template>
-  </polymer-element>
+  </dom-module>
 
-  <polymer-element name="x-test" attributes="value" noscript>
+  <dom-module id="x-test">
     <template>
       <x-foo value="{{value}}"></x-foo>
       <core-localstorage id="localstorage" name="core-localstorage-test" value="{{value}}"></core-localstorage>
     </template>
-  </polymer-element>
+  </dom-module>
   
   <x-test></x-test>
 
   <script>
 
     window.localStorage.setItem('core-localstorage-test', '{"foo":"bar"}');
-    var xtest = document.querySelector('x-test');
+    var xtest;
     
     suite('basic', function() {
+
+      before(function() {
+        Polymer({
+          is: 'x-foo',
+          published: {
+            'value': {
+              type: Object,
+              notify: true
+            }
+          }
+        });
+        Polymer({
+          is: 'x-test',
+          published: {
+            'value': {
+              type: Object,
+              notify: true
+            }
+          }
+        });
+        window.localStorage.setItem('core-localstorage-test', '{"foo":"bar"}');
+        xtest = document.querySelector('x-test');
+        xtest.$.localstorage.load();
+      });
 
       test('initial value', function() {
         assert.isNotNull(xtest.value);
@@ -51,7 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('set value', function(done) {
         var newValue = {'foo': 'zot'};
         xtest.value = newValue;
-        asyncPlatformFlush(function() {
+        flush(function() {
           var v = window.localStorage.getItem(xtest.$.localstorage.name);
           v = JSON.parse(v);
           assert.equal(v.foo, newValue.foo);
@@ -62,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('save', function(done) {
         xtest.value.foo = 'quux';
         xtest.$.localstorage.save();
-        asyncPlatformFlush(function() {
+        flush(function() {
           var v = window.localStorage.getItem(xtest.$.localstorage.name);
           v = JSON.parse(v);
           assert.equal(v.foo, 'quux');
