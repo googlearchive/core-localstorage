@@ -67,6 +67,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         xtest.$.localstorage.load();
       });
 
+      after(function() {
+        window.localStorage.removeItem('core-localstorage-test');
+      });
+
       test('initial value', function() {
         assert.isNotNull(xtest.value);
         assert.equal(xtest.value.foo, 'bar');
