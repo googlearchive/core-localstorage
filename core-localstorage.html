@@ -162,7 +162,13 @@ triggered only when value is a different instance.
      */
     save: function() {
       var v = this.useRaw ? this.value : JSON.stringify(this.value);
-      localStorage.setItem(this.name, v);
+      try {
+        localStorage.setItem(this.name, v);
+      }
+      catch(ex) {
+        // Happens in Safari incognito mode,
+        console.error("localStorage could not be saved. Safari incoginito mode?", ex); 
+      }
     }
     
   });
