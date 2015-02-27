@@ -36,8 +36,8 @@ triggered only when value is a different instance.
      */
 
     /**
-     * Fired when localStorage was changed outside of current document (window storage event)
-     * @event core-localstorage-changed
+     * Fired when localStorage was changed outside of current document (mirrors window storage event)
+     * @event core-localstorage-global-change
      */
 
     published: {
@@ -111,7 +111,7 @@ triggered only when value is a different instance.
     handleStorage: function(ev) {
       if (e.key == this.name) {
         this.load();
-        this.fire('core-localstorage-changed');
+        this.fire('core-localstorage-global-change');
       }
     },
 
