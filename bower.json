@@ -2,6 +2,7 @@
   "name": "core-localstorage",
   "private": true,
   "main": "core-localstorage.html",
+  "ignore": "",
   "dependencies": {
     "polymer": "Polymer/polymer#0.8-preview"
   },
