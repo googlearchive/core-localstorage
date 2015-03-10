@@ -40,7 +40,7 @@ triggered only when value is a different instance.
      * @event core-localstorage-global-change
      */
 
-    published: {
+    properties: {
       /**
        * The key to the data stored in localStorage.
        *
@@ -50,7 +50,8 @@ triggered only when value is a different instance.
        */
       name: {
         type: String,
-        reflect: true
+        reflect: true,
+        observer: 'nameChanged',
       },
       /**
        * The data associated with the specified name.
@@ -61,7 +62,8 @@ triggered only when value is a different instance.
        */
       value: {
         type: Object,
-        notify: true
+        notify: true,
+        observer: 'valueChanged'
       },
       
       /**
@@ -93,10 +95,6 @@ triggered only when value is a different instance.
         useRaw: false,
         autoSaveDisabled: false
       }
-    },
-    bind: {
-      name: 'nameChanged',
-      value: 'valueChanged'
     },
 
     attached: function() {
