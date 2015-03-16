@@ -52,6 +52,7 @@ triggered only when value is a different instance.
         type: String,
         reflect: true,
         observer: 'nameChanged',
+        value: ''
       },
       /**
        * The data associated with the specified name.
@@ -73,7 +74,10 @@ triggered only when value is a different instance.
        * @type boolean
        * @default false
        */
-      useRaw: Boolean,
+      useRaw: {
+        type: Boolean,
+        value: false
+      },
       
       /**
        * If true, auto save is disabled.
@@ -84,16 +88,8 @@ triggered only when value is a different instance.
        */
       autoSaveDisabled: {
         type: Boolean,
-        reflect: true
-      }
-    },
-
-    configure: function() {
-      return {
-        // value: null, do not initialize value, no need to call 
-        name: '',
-        useRaw: false,
-        autoSaveDisabled: false
+        reflect: true,
+        value: false
       }
     },
 
