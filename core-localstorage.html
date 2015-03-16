@@ -50,9 +50,9 @@ triggered only when value is a different instance.
        */
       name: {
         type: String,
-        reflect: true,
-        observer: 'nameChanged',
-        value: ''
+        value: '',
+        reflectToAttribute: true,
+        observer: 'nameChanged'
       },
       /**
        * The data associated with the specified name.
@@ -88,8 +88,8 @@ triggered only when value is a different instance.
        */
       autoSaveDisabled: {
         type: Boolean,
-        reflect: true,
-        value: false
+        value: false,
+        reflectToAttribute: true
       }
     },
 
