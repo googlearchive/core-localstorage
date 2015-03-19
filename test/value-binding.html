@@ -15,7 +15,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
-  
+  <script src="../../test-fixture/test-fixture-mocha.js"></script>
+
+  <link rel="import" href="../../test-fixture/test-fixture.html">  
   <link rel="import" href="../core-localstorage.html">
 
 </head>
@@ -43,7 +45,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     suite('basic', function() {
 
-      before(function() {
+      suiteSetup(function() {
         Polymer({
           is: 'x-foo',
           properties: {
@@ -67,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         xtest.$.localstorage.load();
       });
 
-      after(function() {
+      suiteTeardown(function() {
         window.localStorage.removeItem('core-localstorage-test');
       });
 

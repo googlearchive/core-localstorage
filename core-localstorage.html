@@ -51,8 +51,7 @@ triggered only when value is a different instance.
       name: {
         type: String,
         value: '',
-        reflectToAttribute: true,
-        observer: 'nameChanged'
+        reflectToAttribute: true
       },
       /**
        * The data associated with the specified name.
@@ -93,6 +92,14 @@ triggered only when value is a different instance.
       }
     },
 
+    observers: {
+      'name useRaw': 'loadAgain'
+    },
+
+    ready: function() {
+      if (this.name !== '')
+        this.load();
+    },
     attached: function() {
       this._handleStorage = this.handleStorage.bind(this);
       window.addEventListener('storage', this._handleStorage);
@@ -115,10 +122,10 @@ triggered only when value is a different instance.
       }
     },
 
-    nameChanged: function() {
+    loadAgain: function() {
       this.load();
     },
-    
+
     load: function() {
       var v = localStorage.getItem(this.name);
       if (this.useRaw) {

@@ -15,27 +15,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
-  
+  <script src="../../test-fixture/test-fixture-mocha.js"></script>
+
+  <link rel="import" href="../../test-fixture/test-fixture.html">
   <link rel="import" href="../core-localstorage.html">
 
 </head>
 <body>
 
-  <core-localstorage id="localstorage" use-raw name="core-localstorage-test"></core-localstorage>
+
+  <test-fixture id="fixture">
+    <template>
+      <core-localstorage id="localstorage" name="core-localstorage-test" use-raw></core-localstorage>
+    </template>
+  </test-fixture>
 
   <script>
 
     var storage;
     
-    suite('basic', function() {
+    suite('raw', function() {
 
-      before( function() {
+      setup(function() {
         window.localStorage.setItem('core-localstorage-test', 'hello world');
-        storage = document.querySelector('#localstorage');
-        storage.load();
+        document.getElementById('fixture').create();
+        storage = document.getElementById('localstorage');
       });
 
-      after(function() {
+      teardown(function() {
         window.localStorage.removeItem('core-localstorage-test');
       });
 
