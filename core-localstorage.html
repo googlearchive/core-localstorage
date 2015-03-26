@@ -110,7 +110,7 @@ triggered only when value is a different instance.
     },
 
     handleStorage: function(ev) {
-      if (e.key == this.name) {
+      if (ev.key == this.name) {
         this.load();
         this.fire('core-localstorage-global-change');
       }
