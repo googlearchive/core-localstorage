@@ -26,7 +26,7 @@ triggered only when value is a different instance.
 
 <link rel="import" href="../polymer/polymer.html">
 
-<polymer-element name="core-localstorage" attributes="name value useRaw autoSaveDisabled" hidden>
+<polymer-element name="core-localstorage" attributes="name value useRaw autoSaveDisabled useChrome" hidden>
 <script>
 
   Polymer('core-localstorage', {
@@ -71,6 +71,17 @@ triggered only when value is a different instance.
      * @default false
      */
     autoSaveDisabled: false,
+
+    /**
+    * If blank, use localStorage (default), if
+    * 'local', use chrome.storage.local, if 'sync' use
+    * chrome.storage.sync
+    *
+    * @attribute useChrome
+    * @type string
+    * @default null
+    */
+    useChrome: null, 
     
     valueChanged: function() {
       if (this.loaded && !this.autoSaveDisabled) {
@@ -81,9 +92,8 @@ triggered only when value is a different instance.
     nameChanged: function() {
       this.load();
     },
-    
-    load: function() {
-      var v = localStorage.getItem(this.name);
+
+    onAfterLoad: function(v) {
       if (this.useRaw) {
         this.value = v;
       } else {
@@ -110,7 +120,45 @@ triggered only when value is a different instance.
       this.loaded = true;
       this.asyncFire('core-localstorage-load');
     },
+
+    localStorageLoad: function() {
+      var v = localStorage.getItem(this.name);
+      this.onAfterLoad(v);
+    },
+
+    chromeStorageLoad: function() {
+      var chromeStorage;
+      chromeStorage = chrome.storage[this.useChrome];
+      chromeStorage.get([this.name], function(items) {
+        var v = null;
+        if(items[this.name]) {
+          v = items[this.name];
+        }
+        this.onAfterLoad(v);
+      }.bind(this));
+    },
     
+    load: function() {
+      if(this.useChrome === null) {
+        this.localStorageLoad();
+      } else {
+        this.chromeStorageLoad();
+      }
+    },
+
+    localStorageSave: function(v) {
+      localStorage.setItem(this.name, v);
+    },
+
+    chromeStorageSave: function(v) {
+      var chromeStorage;
+      chromeStorage = chrome.storage[this.useChrome];
+      var nameValue = {};
+      nameValue[this.name] = v;
+      chromeStorage.set(nameValue, function() { 
+      }.bind(this));
+    },
+
     /** 
      * Saves the value to localStorage.
      *
@@ -118,7 +166,11 @@ triggered only when value is a different instance.
      */
     save: function() {
       var v = this.useRaw ? this.value : JSON.stringify(this.value);
-      localStorage.setItem(this.name, v);
+      if(this.useChrome == null) {
+        this.localStorageSave(v);
+      } else {
+        this.chromeStorageSave(v);
+      }
     }
     
   });
