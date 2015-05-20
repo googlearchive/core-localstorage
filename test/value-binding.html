@@ -69,7 +69,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         });
       });
-
+        
+      test('remove', function(done) {
+        xtest.value = { hello: 'worlds' };
+        xtest.$.localStorage.remove();
+        asyncPlatformFlush(function () {
+            assert.isNull(xtest.value);
+            done();
+        });
+      });
     });
     
   </script>
